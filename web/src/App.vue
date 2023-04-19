@@ -1,14 +1,17 @@
 <template>
 	<NavbarHeader />
+	<VideoQuiz />
 </template>
 
 <script>
 import NavbarHeader from './components/NavbarHeader.vue'
+import VideoQuiz from './components/VideoQuiz.vue'
 
 export default {
 	name: 'App',
 	components: {
-		NavbarHeader
+		NavbarHeader,
+		VideoQuiz
 	},
 	data() {
 		return {
