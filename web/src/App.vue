@@ -1,25 +1,30 @@
 <template>
-	<NavbarHeader />
-	<VideoQuiz />
+	<NavbarHeader :mode="videoMode" @toggle="toggleVideoMode"/>
+	<VideoQuiz v-show="videoMode === 'Quiz'" />
+	<VideoEdit v-show="videoMode === 'Edit'" />
 </template>
 
 <script>
 import NavbarHeader from './components/NavbarHeader.vue'
 import VideoQuiz from './components/VideoQuiz.vue'
+import VideoEdit from './components/VideoEdit.vue'
 
 export default {
 	name: 'App',
 	components: {
 		NavbarHeader,
-		VideoQuiz
+		VideoQuiz,
+		VideoEdit
 	},
 	data() {
 		return {
-			
+			videoMode: 'Quiz'
 		}
 	},
 	methods: {
-		
+		toggleVideoMode(mode) {
+			this.videoMode = mode
+		}
 	}
 }
 </script>

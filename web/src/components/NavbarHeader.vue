@@ -24,8 +24,9 @@
                         </div>
                     </div>
 
-                    <button class="edit-button">
-                        <p class="edit-p">Edit</p>
+                    <button class="edit-button" @click="togglemodeClick">
+                        <p v-show="mode === 'Quiz'" class="edit-p">Edit</p>
+                        <p v-show="mode === 'Edit'" class="edit-p">Quiz</p>
                     </button>
                 </div>
             </div>
@@ -36,7 +37,19 @@
 <script>
 
 export default {
-	name: 'NavbarHeader'
+	name: 'NavbarHeader',
+    props: {
+        mode: String
+    },
+    methods: {
+        togglemodeClick() {
+            if(this.mode === 'Quiz') {
+                this.$emit('toggle', 'Edit')
+            } else if(this.mode === 'Edit') {
+                this.$emit('toggle', 'Quiz')
+            }
+        }
+    }
 }
 </script>
 
