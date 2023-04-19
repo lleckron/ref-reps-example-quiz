@@ -36,18 +36,7 @@
 <script>
 
 export default {
-	name: 'NavbarHeader',
-	components: {
-		
-	},
-	data() {
-		return {
-			
-		}
-	},
-	methods: {
-		
-	}
+	name: 'NavbarHeader'
 }
 </script>
 
