@@ -24,7 +24,7 @@
                         </div>
                     </div>
 
-                    <button class="edit-button" @click="togglemodeClick">
+                    <button class="edit-button" @click="toggleModeClick">
                         <p v-show="mode === 'Quiz'" class="edit-p">Edit</p>
                         <p v-show="mode === 'Edit'" class="edit-p">Quiz</p>
                     </button>
@@ -42,7 +42,7 @@ export default {
         mode: String
     },
     methods: {
-        togglemodeClick() {
+        toggleModeClick() {
             if(this.mode === 'Quiz') {
                 this.$emit('toggle', 'Edit')
             } else if(this.mode === 'Edit') {

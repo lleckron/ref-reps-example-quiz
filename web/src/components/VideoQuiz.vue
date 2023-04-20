@@ -33,9 +33,7 @@ export default {
             videoStatus: 'Pause',
             videoProgressPercent: 0,
             isDraggingSeeker: false,
-            videoSeekerTime: '00:00',
             videoDuration: '00:00',
-
 		}
 	},
 	methods: {
@@ -112,14 +110,15 @@ export default {
         this.setupVideoTimeListeners()
         this.setupProgressBarListeners()
         this.setupResetVideoListeners()
+        this.resetVideo()
         setTimeout(() => {
             this.setVideoDuration()
-        },80)
+        },100)
     }
 }
 </script>
 
-<style>
+<style scoped>
 
 .video-container {
     display: flex;

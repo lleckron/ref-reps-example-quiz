@@ -23,6 +23,13 @@ export default {
 	},
 	methods: {
 		toggleVideoMode(mode) {
+			if(mode === 'Quiz') {
+				const video = document.getElementById('quiz-video')
+				video.currentTime = 0
+			} else if(mode === 'Edit') {
+				const video = document.getElementById('edit-video')
+				video.currentTime = 0
+			}
 			this.videoMode = mode
 		}
 	}
