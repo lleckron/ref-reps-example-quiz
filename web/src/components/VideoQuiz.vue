@@ -10,7 +10,15 @@
                 </button>
             </div>
 
-            <div class="video-time" id="video-time" draggable="false">
+            <div class="video-time" id="video-time" draggable="false" @mouseover="showTooltip = true" @mouseleave="showTooltip = false">
+                <TransitionGroup name="toggle-tooltip">
+                    <div v-show="showTooltip === true" :key="showTooltip" class="show-tooltip">
+                        <div class="tooltip">
+                            <p>Click the time to reset the video.</p>
+                        </div>
+                        <div class="tail" :key="showTooltip"></div>
+                    </div>
+                </TransitionGroup>
                 <span id="video-current-time">00:00</span>
                 <span> / </span> 
                 <span id="video-duration">{{videoDuration}}</span>
@@ -38,6 +46,7 @@ export default {
             videoProgressPercent: 0,
             isDraggingSeeker: false,
             videoDuration: '00:00',
+            showTooltip: false,
 		}
 	},
 	methods: {
@@ -118,7 +127,7 @@ export default {
         setTimeout(() => {
             this.setVideoDuration()
         },100)
-        
+
         const video = document.getElementById('quiz-video')
         video.currentTime = 0
     }
@@ -229,6 +238,54 @@ export default {
     border-radius: 6px;
     left: 0%;
     margin: -30px 0 0 0;
+}
+
+.show-tooltip {
+    position: absolute;
+    min-width: 100px;
+    max-width: 100px;
+    min-height: 80px;
+    max-height: 80px;
+    background: #ffffff;
+    margin-top: -70px;
+    margin-left: -11px;
+    border-radius: 6px;
+    opacity: .9;
+}
+
+.tooltip {
+    width: 100%;
+    font-size: 15px;
+    text-align: center;
+}
+
+.tail {
+    position: absolute;
+    bottom: -20px;
+    left: 40px;
+    width: 0;
+    height: 0;
+    border-color:#f9f9f9 transparent transparent transparent;
+    border-width: 10px;
+    border-style: solid;
+}
+
+.toggle-tooltip-leave-from,
+.toggle-tooltip-enter-to  {
+    opacity: .9;
+}
+
+.toggle-tooltip-leave-to,
+.toggle-tooltip-enter-from {
+    opacity: 0;
+}
+
+.toggle-tooltip-leave-active {
+  transition: all .1s ease-in-out;
+}
+
+.toggle-tooltip-enter-active {
+  transition: all .25s ease-in-out;
 }
 
 </style>

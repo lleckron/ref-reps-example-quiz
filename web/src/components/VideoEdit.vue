@@ -34,7 +34,7 @@
                 <li v-for="(timestamp,index) in formattedTimestamps" :key="timestamp">
                     <button id="delete-timestamp-button" @click="deleteTimestamp(index)">X</button>
                     <p class="formatted-timestamp">{{timestamp}}</p>
-                    <button v-if="activities[index] == ''" class="activity-button" id="activity-button" @click="toggleAssignActivityModal(index)" >
+                    <button class="activity-button" id="activity-button" @click="toggleDragAndDropModal(index)" >
                         <img src="../assets/activity.png">
                     </button>
                 </li>
@@ -42,16 +42,18 @@
 
             <button id="save-timestamps-button" @click="updateTimestampList()">Save</button>
         </div>
+        <DragAndDrop v-if="modalVisible === true && imageReady === true" :activity="activities[currentActivityIndex]" :image="dragAndDropImage" @close="toggleDragAndDropModal" @save="dragAndDropSave"/>
     </div>
 </template>
 
 <script>
-//import ActivityDto from '../models/ActivityDto'
+import DragAndDrop from './modals/DragAndDrop.vue'
+import ActivityDto from '../models/ActivityDto'
 
 export default {
 	name: 'VideoEdit',
 	components: {
-		
+        DragAndDrop
 	},
 	data() {
 		return {
@@ -66,7 +68,11 @@ export default {
             formattedTimestamps: [],
             activities: [],
             newTimestamp: Number,
-
+            modalVisible: false,
+            currentActivityTimestamp: Number,
+            currentActivityIndex: Number,
+            dragAndDropImage: HTMLCanvasElement,
+            imageReady: false
 		}
 	},
 	methods: {
@@ -149,8 +155,6 @@ export default {
                 event.preventDefault()
                 const progressBar = document.getElementById('edit-progress-bar')
                 let newX = event.layerX
-                //console.log(newX)
-                //console.log(progressDivWidth)
                 this.videoProgressPercent = newX / progressDivWidth
                 seeker.style.left = (this.videoProgressPercent * 100) + '%'
                 progressBar.style.width = (this.videoProgressPercent * 100) + '%'
@@ -253,12 +257,7 @@ export default {
         /* Activity Creation and Edit Functions */
         newTimestampButtonClick() {
             if(this.timestamps.length >= this.maxTimestamps) {
-                if(this.timestampMaxExceeded === false) {
-                    this.timestampMaxExceeded = true
-                    setTimeout(() => {
-                        this.timestampMaxExceeded = false
-                    }, 2000)
-                }
+                return
             } else {
                 const video = document.getElementById('edit-video')
                 this.newTimestamp = video.currentTime
@@ -291,9 +290,6 @@ export default {
             }
             this.toggleSaveButton()
         },
-        updateTimestampList() {
-            console.log('Save')
-        },
         toggleSaveButton() {
             let count = 0
             for(const activity of this.activities) {
@@ -312,6 +308,59 @@ export default {
             this.formattedTimestamps.splice(deletedTimestampIndex,1)
             this.activities.splice(deletedTimestampIndex, 1)
             this.toggleSaveButton()
+        },
+        moveVideoToTimestampFrame() {
+            const video = document.getElementById('edit-video')
+            video.currentTime = this.currentActivityTimestamp
+
+            let videoPosition = video.currentTime / video.duration
+            let barWidth = videoPosition * 100
+            const progressBar = document.getElementById('edit-progress-bar')
+            const seeker = document.getElementById('edit-draggable-seeker')
+            progressBar.style.width =  barWidth + '%'
+            seeker.style.left = barWidth + '%'
+        },
+        toggleDragAndDropModal(index) {
+            this.modalVisible = !this.modalVisible
+            
+            if(this.modalVisible) {
+                this.currentActivityTimestamp = this.timestamps[index]
+                this.currentActivityIndex = index
+                const video = document.getElementById('edit-video')
+                video.pause()
+                this.moveVideoToTimestampFrame()
+                this.dragAndDropSetup()
+            } else {
+                this.imageReady = false
+            }
+        },
+        dragAndDropSetup() {
+            const video = document.getElementById('edit-video')
+            const canvas = document.createElement('canvas')
+            canvas.width = video.videoWidth
+            canvas.height = video.videoHeight
+
+            const context = canvas.getContext('2d')
+            context.drawImage(video, 0, 0, canvas.width, canvas.height)
+            this.dragAndDropImage = canvas
+            this.imageReady = true
+        },
+        dragAndDropSave(modalData) {
+            this.toggleDragAndDropModal()
+            let answers = []
+            for(const answer of modalData[1]) {
+                answers.push(answer)
+            }
+            if(this.activities[this.currentActivityIndex].timestamp) {
+                this.activities[this.currentActivityIndex].questionText = modalData[0]
+                this.activities[this.currentActivityIndex].answers = modalData[1]
+            } else {
+                this.activities[this.currentActivityIndex] = new ActivityDto(this.currentActivityTimestamp, modalData[0], modalData[1])
+            }
+            this.toggleSaveButton()
+        },
+        updateTimestampList() {
+            this.$emit('save',this.activities) 
         },
 	},
     mounted() {
@@ -344,7 +393,6 @@ export default {
 
 #edit-video {
     width: 1000px;
-    height: 625px;
 }
 
 .edit-controls {
@@ -472,7 +520,8 @@ export default {
 .timestamps-div {
     position: relative;
     height: 615px;
-    width: 270px;
+    min-width: 270px;
+    max-width: 270px;
     background: #0e333c;
     margin-left: 15px;
     margin-top: 48px;
