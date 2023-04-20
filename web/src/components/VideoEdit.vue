@@ -24,18 +24,22 @@
             <div class="edit-add-timestamp-div" draggable="false">
                 <button id="edit-add-timestamp-button" @click="newTimestampButtonClick()">
                     Timestamp
-                    <TransitionGroup name="toggle-tooltip">
-                        <div v-show="timestampMaxExceeded" :key="timestampMaxExceeded" class="show-exceeded-max-timestamps">
-                            <div class="exceeded-max-timestamps">
-                                <p>You have reached the maximum amount of timestamps.</p>
-                            </div>
-                            <div class="exceeded-max-timestamps-tail"></div>
-                        </div>
-                    </TransitionGroup>
                 </button>
             </div>
+
         </div>
+
         <div class="timestamps-div">
+            <ul v-if="timestamps.length >= 1" class="timestamp-ul">
+                <li v-for="(timestamp,index) in formattedTimestamps" :key="timestamp">
+                    <button id="delete-timestamp-button" @click="deleteTimestamp(index)">X</button>
+                    <p class="formatted-timestamp">{{timestamp}}</p>
+                    <button v-if="activities[index] == ''" class="activity-button" id="activity-button" @click="toggleAssignActivityModal(index)" >
+                        <img src="../assets/activity.png">
+                    </button>
+                </li>
+            </ul>
+
             <button id="save-timestamps-button" @click="updateTimestampList()">Save</button>
         </div>
     </div>
@@ -59,6 +63,7 @@ export default {
             maxTimestamps: 7,
             timestampMaxExceeded: false,
             timestamps: [],
+            formattedTimestamps: [],
             activities: [],
             newTimestamp: Number,
 
@@ -259,34 +264,53 @@ export default {
                 let count = 0
                 for(const timestamp of this.timestamps) {
                     if(timestamp > this.newTimestamp) {
-                        this.timestamps.splice(count,0,this.newTimestamp)
-                        this.activities.splice(count,0,'')
+                        this.timestamps.splice(count, 0, this.newTimestamp)
+                        this.formattedTimestamps.splice(count, 0, this.formatVideoTime(this.newTimestamp))
+                        this.activities.splice(count, 0, '')
                         break
                     } else if(count == this.timestamps.length-1) {
-                        this.timestamps.splice(count+1,0,this.newTimestamp)
-                        this.activities.splice(count+1,0,'')
+                        this.timestamps.splice(count+1, 0, this.newTimestamp)
+                        this.formattedTimestamps.splice(count+1, 0, this.formatVideoTime(this.newTimestamp))
+                        this.activities.splice(count+1, 0, '')
                         break
                     }else {
                         count++
                     }
                 }
             } else {
-                this.timestamps.splice(0,0,this.newTimestamp)
-                this.activities.splice(0,0,'')
+                this.timestamps.splice(0, 0, this.newTimestamp)
+                this.formattedTimestamps.splice(0, 0, this.formatVideoTime(this.newTimestamp))
+                this.activities.splice(0, 0, '')
             }
             this.toggleSaveButton()
         },
         updateTimestampList() {
             console.log('Save')
-        }
+        },
+        toggleSaveButton() {
+            let count = 0
+            for(const activity of this.activities) {
+                if(activity === '') {
+                    count++
+                }
+            }
+            if(count > 0) {
+                document.getElementById('save-timestamps-button').disabled = true
+            } else {
+                document.getElementById('save-timestamps-button').disabled = false
+            }
+        },
 
 	},
     mounted() {
-        this.setupVideoTimeListeners()
-        this.setupProgressBarListeners()
-        this.setupSeekerEventListeners()
-        this.setupProgressDivClickListener()
-        this.resetVideo()
+        setTimeout(() => {
+            this.setupVideoTimeListeners()
+            this.setupProgressBarListeners()
+            this.setupSeekerEventListeners()
+            this.setupProgressDivClickListener()
+            this.resetVideo()
+        }, 10)
+
         setTimeout(() => {
             this.setVideoDuration()
         },100)
@@ -314,7 +338,7 @@ export default {
     position: absolute;
     flex-wrap: wrap;
     margin-top: 613px;
-    margin-right: 314px;
+    margin-right: 285px;
     background: #0e333c;
     width: 1000px;
     height: 50px;
@@ -423,19 +447,21 @@ export default {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    cursor: pointer;
 }
 
 #edit-add-timestamp-button:hover {
     background: #349b88;
+    box-shadow: 0 2px 2px #000000;
 }
 
 .timestamps-div {
     position: relative;
     height: 615px;
-    width: 300px;
+    width: 270px;
     background: #0e333c;
     margin-left: 15px;
-    margin-top: 45px;
+    margin-top: 48px;
     border-radius: 13px;
 }
 
@@ -449,20 +475,82 @@ export default {
     border: none;
     color: white;
     text-shadow: 1px 1px 1px black;
-    box-shadow: 0 6px 6px #000000;
     background: #4AAE9B;
     width: 130px;
     height: 60px;
     border-radius: 15px;
+    cursor: pointer;
 }
 
 #save-timestamps-button:hover {
     background: #349b88;
-    box-shadow: 0 8px 8px #000000;
+    box-shadow: 0 2px 2px #000000;
 }
 
 #save-timestamps-button:disabled {
     background: #52746d;
     color: #cfcccc
+}
+
+.timestamp-ul {
+    margin-left: auto;
+    padding: 0 0 0 7px;
+}
+
+.timestamp-ul li{
+    display: flex;
+    flex-direction: row;
+    color: white;
+    margin: 15px 10px 0 0;
+    font-size: 35px;
+}
+
+.timestamp-ul img {
+    max-height: 35px;
+}
+
+#delete-timestamp-button {
+    margin: 0 6px 0 6px;
+    text-align: center;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 25px;
+    text-shadow: 1px 1px 1px black;
+    background: #B22222;
+    width: 55px;
+    height: 55px;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+#delete-timestamp-button:hover {
+    background: #8B0000;
+    box-shadow: 0 2px 2px #000000;
+}
+
+#activity-button {
+    margin: 0 6px 0 6px;
+    text-align: center;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 25px;
+    text-shadow: 1px 1px 1px black;
+    background: #4AAE9B;
+    width: 55px;
+    height: 55px;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+#activity-button:hover {
+    background: #349b88;
+    box-shadow: 0 2px 2px #000000;
+}
+
+.formatted-timestamp {
+    margin: 0 12px 0 12px;
+    padding-top: 4px;
 }
 </style>
