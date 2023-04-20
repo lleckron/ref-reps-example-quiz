@@ -1,7 +1,7 @@
 <template>
 	<NavbarHeader :mode="videoMode" @toggle="toggleVideoMode"/>
-	<VideoQuiz v-show="videoMode === 'Quiz'" />
-	<VideoEdit v-show="videoMode === 'Edit'" />
+	<VideoQuiz v-if="videoMode === 'Quiz'" />
+	<VideoEdit v-else-if="videoMode === 'Edit'" />
 </template>
 
 <script>
@@ -24,13 +24,6 @@ export default {
 	},
 	methods: {
 		toggleVideoMode(mode) {
-			if(mode === 'Quiz') {
-				const video = document.getElementById('quiz-video')
-				video.currentTime = 0
-			} else if(mode === 'Edit') {
-				const video = document.getElementById('edit-video')
-				video.currentTime = 0
-			}
 			this.videoMode = mode
 		}
 	}

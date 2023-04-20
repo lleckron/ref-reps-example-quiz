@@ -118,6 +118,9 @@ export default {
         setTimeout(() => {
             this.setVideoDuration()
         },100)
+        
+        const video = document.getElementById('quiz-video')
+        video.currentTime = 0
     }
 }
 </script>

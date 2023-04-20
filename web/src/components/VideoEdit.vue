@@ -102,6 +102,7 @@ export default {
         },
         setupVideoTimeListeners() {
             const video = document.getElementById('edit-video')
+
             video.addEventListener('timeupdate', () => {
                 const videoCurrentTime = document.getElementById('edit-video-current-time')
                 videoCurrentTime.innerHTML = this.formatVideoTime(video.currentTime);
@@ -113,6 +114,7 @@ export default {
         },
         setupProgressBarListeners() {
             const video = document.getElementById('edit-video')
+
             video.addEventListener('timeupdate', function() {
                 let videoPosition = video.currentTime / video.duration
                 let barWidth = videoPosition * 100
@@ -142,10 +144,13 @@ export default {
             const progressDiv = document.getElementById('edit-progress-div')
             const progressDivRect = progressDiv.getBoundingClientRect()
             const progressDivWidth = progressDivRect.width
+
             progressDiv.addEventListener('click', (event) => {
                 event.preventDefault()
                 const progressBar = document.getElementById('edit-progress-bar')
                 let newX = event.layerX
+                //console.log(newX)
+                //console.log(progressDivWidth)
                 this.videoProgressPercent = newX / progressDivWidth
                 seeker.style.left = (this.videoProgressPercent * 100) + '%'
                 progressBar.style.width = (this.videoProgressPercent * 100) + '%'
@@ -159,6 +164,7 @@ export default {
             const progressDiv = document.getElementById('edit-progress-div')
             const progressDivRect = progressDiv.getBoundingClientRect()
             const progressDivWidth = progressDivRect.width
+
             seeker.addEventListener('mousedown', () => {
                 this.isDraggingSeeker = true
                 progressDiv.addEventListener('mousemove', (event) => {
@@ -180,6 +186,7 @@ export default {
         seekerMouseUpListener() {
             const seeker = document.getElementById('edit-draggable-seeker')
             const video = document.getElementById('edit-video')
+
             seeker.addEventListener('mouseup', (event) => {
                 event.preventDefault()
                 if(event.target.id === 'edit-draggable-seeker') {
@@ -300,7 +307,12 @@ export default {
                 document.getElementById('save-timestamps-button').disabled = false
             }
         },
-
+        deleteTimestamp(deletedTimestampIndex) {
+            this.timestamps.splice(deletedTimestampIndex,1)
+            this.formattedTimestamps.splice(deletedTimestampIndex,1)
+            this.activities.splice(deletedTimestampIndex, 1)
+            this.toggleSaveButton()
+        },
 	},
     mounted() {
         setTimeout(() => {
@@ -309,11 +321,13 @@ export default {
             this.setupSeekerEventListeners()
             this.setupProgressDivClickListener()
             this.resetVideo()
+            setTimeout(() => {
+                this.setVideoDuration()
+            }, 100)
         }, 10)
 
-        setTimeout(() => {
-            this.setVideoDuration()
-        },100)
+        const video = document.getElementById('edit-video')
+		video.currentTime = 0
     }
 }
 </script>
@@ -515,7 +529,7 @@ export default {
     border: none;
     color: white;
     font-weight: bold;
-    font-size: 25px;
+    font-size: 30px;
     text-shadow: 1px 1px 1px black;
     background: #B22222;
     width: 55px;
@@ -531,6 +545,7 @@ export default {
 
 #activity-button {
     margin: 0 6px 0 6px;
+    padding-top: 4px;
     text-align: center;
     border: none;
     color: white;
@@ -551,6 +566,6 @@ export default {
 
 .formatted-timestamp {
     margin: 0 12px 0 12px;
-    padding-top: 4px;
+    padding-top: 6px;
 }
 </style>
