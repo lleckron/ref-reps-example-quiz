@@ -2,21 +2,25 @@
     <div class="video-container">
         <video id="quiz-video" src="../assets/P15_Shooting_Foul_2.mp4"></video>
         <div class="controls" id="controls">
+
             <div class="play-button-div">
                 <button class="play-pause-button" id="play-pause-button" @click="togglePlayVideo()" draggable="false">
                     <img v-show="videoStatus === 'Pause'" src="../assets/play.png" draggable="false">
                     <img v-show="videoStatus === 'Play'" src="../assets/pause.png" draggable="false">
                 </button>
             </div>
+
             <div class="video-time" id="video-time" draggable="false">
                 <span id="video-current-time">00:00</span>
                 <span> / </span> 
                 <span id="video-duration">{{videoDuration}}</span>
             </div>
+
             <div class="progress-div" id="progress-div">
                 <div class="progress-bar" id="progress-bar"></div>
                 <div class="draggable-seeker" id="draggable-seeker"></div>
             </div>
+
         </div>
     </div>
 </template>

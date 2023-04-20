@@ -2,21 +2,25 @@
     <div class="edit-video-container">
         <video id="edit-video" src="../assets/P15_Shooting_Foul_2.mp4"></video>
         <div class="edit-controls" id="edit-controls">
+
             <div class="edit-play-button-div">
                 <button class="edit-play-pause-button" id="edit-play-pause-button" @click="togglePlayVideo()" draggable="false">
                     <img v-show="videoStatus === 'Pause'" src="../assets/play.png">
                     <img v-show="videoStatus === 'Play'" src="../assets/pause.png">
                 </button>
             </div>
+
             <div class="edit-video-time" id="edit-video-time" draggable="false">
                 <span id="edit-video-current-time">00:00</span>
                 <span> / </span> 
                 <span id="edit-video-duration">{{videoDuration}}</span>
             </div>
+
             <div class="edit-progress-div" id="edit-progress-div">
                 <div class="edit-progress-bar" id="edit-progress-bar"></div>
                 <div class="edit-draggable-seeker" id="edit-draggable-seeker"></div>
             </div>
+
             <div class="edit-add-timestamp-div" draggable="false">
                 <button id="edit-add-timestamp-button" @click="newTimestampButtonClick()">
                     Timestamp
@@ -31,10 +35,14 @@
                 </button>
             </div>
         </div>
+        <div class="timestamps-div">
+            <button id="save-timestamps-button" @click="updateTimestampList()">Save</button>
+        </div>
     </div>
 </template>
 
 <script>
+//import ActivityDto from '../models/ActivityDto'
 
 export default {
 	name: 'VideoEdit',
@@ -49,10 +57,16 @@ export default {
             videoSeekerTime: '00:00',
             videoDuration: '00:00',
             maxTimestamps: 7,
-            timestampMaxExceeded: false
+            timestampMaxExceeded: false,
+            timestamps: [],
+            activities: [],
+            newTimestamp: Number,
+
 		}
 	},
 	methods: {
+        
+        /* Video Progress Slider and Video Time Functions */
 		togglePlayVideo() {
             const video = document.getElementById('edit-video')
             if (video.paused) {
@@ -153,7 +167,7 @@ export default {
                         
                         const video = document.getElementById('edit-video')
                         let seekerProgress =  this.videoProgressPercent * video.duration
-                        this.videoSeekerTime = this.formatTimeForVideo(seekerProgress)
+                        this.videoSeekerTime = this.formatVideoTime(seekerProgress)
                     }
                 })
             })
@@ -224,6 +238,48 @@ export default {
             videoCurrentTime.innerHTML = '00:00'
         },
 
+        /* Activity Creation and Edit Functions */
+        newTimestampButtonClick() {
+            if(this.timestamps.length >= this.maxTimestamps) {
+                if(this.timestampMaxExceeded === false) {
+                    this.timestampMaxExceeded = true
+                    setTimeout(() => {
+                        this.timestampMaxExceeded = false
+                    }, 2000)
+                }
+            } else {
+                const video = document.getElementById('edit-video')
+                this.newTimestamp = video.currentTime
+                this.createNewTimestamp()
+                this.toggleSaveButton()
+            }
+        },
+        createNewTimestamp() {
+            if(this.timestamps.length > 0) {
+                let count = 0
+                for(const timestamp of this.timestamps) {
+                    if(timestamp > this.newTimestamp) {
+                        this.timestamps.splice(count,0,this.newTimestamp)
+                        this.activities.splice(count,0,'')
+                        break
+                    } else if(count == this.timestamps.length-1) {
+                        this.timestamps.splice(count+1,0,this.newTimestamp)
+                        this.activities.splice(count+1,0,'')
+                        break
+                    }else {
+                        count++
+                    }
+                }
+            } else {
+                this.timestamps.splice(0,0,this.newTimestamp)
+                this.activities.splice(0,0,'')
+            }
+            this.toggleSaveButton()
+        },
+        updateTimestampList() {
+            console.log('Save')
+        }
+
 	},
     mounted() {
         this.setupVideoTimeListeners()
@@ -258,6 +314,7 @@ export default {
     position: absolute;
     flex-wrap: wrap;
     margin-top: 613px;
+    margin-right: 314px;
     background: #0e333c;
     width: 1000px;
     height: 50px;
@@ -372,4 +429,40 @@ export default {
     background: #349b88;
 }
 
+.timestamps-div {
+    position: relative;
+    height: 615px;
+    width: 300px;
+    background: #0e333c;
+    margin-left: 15px;
+    margin-top: 45px;
+    border-radius: 13px;
+}
+
+#save-timestamps-button {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    margin: 20px 10px;
+    text-align: center;
+    font-size: 35px;
+    border: none;
+    color: white;
+    text-shadow: 1px 1px 1px black;
+    box-shadow: 0 6px 6px #000000;
+    background: #4AAE9B;
+    width: 130px;
+    height: 60px;
+    border-radius: 15px;
+}
+
+#save-timestamps-button:hover {
+    background: #349b88;
+    box-shadow: 0 8px 8px #000000;
+}
+
+#save-timestamps-button:disabled {
+    background: #52746d;
+    color: #cfcccc
+}
 </style>

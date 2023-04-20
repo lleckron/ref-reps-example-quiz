@@ -2,9 +2,10 @@
 	<header class="ref-reps-header">
         <nav class="header-nav">
             <div class="header-content">
+
                 <div class="left-nav-content">
                     <img src="../assets/refreps_logo_web.webp" alt="Ref Reps logo" />
-
+                    
                     <div class="explore-content">
                         <div class="explore-div">
                             <svg class="explore-svg" aria-hidden="true" focusable="false" data-prefix="far" data-icon="store" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
@@ -29,6 +30,7 @@
                         <p v-show="mode === 'Edit'" class="edit-p">Quiz</p>
                     </button>
                 </div>
+
             </div>
         </nav>
     </header>

@@ -18,7 +18,8 @@ export default {
 	},
 	data() {
 		return {
-			videoMode: 'Quiz'
+			videoMode: 'Quiz',
+			activities: [],
 		}
 	},
 	methods: {
