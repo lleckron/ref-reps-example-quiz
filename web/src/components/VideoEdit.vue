@@ -75,9 +75,10 @@ export default {
             imageReady: false
 		}
 	},
+    props: {
+        existingActivities: {}
+    },
 	methods: {
-        
-        /* Video Progress Slider and Video Time Functions */
 		togglePlayVideo() {
             const video = document.getElementById('edit-video')
             if (video.paused) {
@@ -162,6 +163,17 @@ export default {
                 const video = document.getElementById('edit-video')
                 video.currentTime = this.videoProgressPercent * video.duration
             })
+        }, 
+        setupExistingActivities() {
+            this.activities = this.existingActivities
+            console.log(this.activities)
+            for(const activity of this.activities) {
+                let timestamp = activity.timestamp
+                this.timestamps.push(timestamp)
+                this.formattedTimestamps.push(this.formatVideoTime(timestamp))
+                console.log(this.timestamps)
+                console.log(this.formattedTimestamps)
+            }
         },
         seekerMouseDownListener() {
             const seeker = document.getElementById('edit-draggable-seeker')
@@ -253,8 +265,6 @@ export default {
             progressBar.style.width = 0 + '%'
             videoCurrentTime.innerHTML = '00:00'
         },
-
-        /* Activity Creation and Edit Functions */
         newTimestampButtonClick() {
             if(this.timestamps.length >= this.maxTimestamps) {
                 return
@@ -361,8 +371,11 @@ export default {
         },
         updateTimestampList() {
             this.$emit('save',this.activities) 
-        },
+        }
 	},
+    created() {
+        this.setupExistingActivities()
+    },
     mounted() {
         setTimeout(() => {
             this.setupVideoTimeListeners()

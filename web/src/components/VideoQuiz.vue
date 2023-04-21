@@ -30,15 +30,19 @@
             </div>
 
         </div>
+        <div>
+            <DragAndDropQuizQuestion v-if="dragAndDropReady" :activity="activities[questionCounter]"/>
+        </div>
     </div>
 </template>
 
 <script>
+import DragAndDropQuizQuestion from './DragAndDropQuizQuestion.vue'
 
 export default {
 	name: 'VideoQuiz',
 	components: {
-		
+        DragAndDropQuizQuestion
 	},
 	data() {
 		return {
@@ -47,8 +51,15 @@ export default {
             isDraggingSeeker: false,
             videoDuration: '00:00',
             showTooltip: false,
+            dragAndDropReady: false,
+            questionCounter: 0,
+            timestamps: [],
+            results: []
 		}
 	},
+    props: {
+        activities: {}
+    },
 	methods: {
 		togglePlayVideo() {
             const video = document.getElementById('quiz-video')
@@ -82,7 +93,10 @@ export default {
             const video = document.getElementById('quiz-video')
             video.addEventListener('timeupdate', () => {
                 const videoCurrentTime = document.getElementById("video-current-time")
-                videoCurrentTime.innerHTML = this.formatVideoTime(video.currentTime);
+                videoCurrentTime.innerHTML = this.formatVideoTime(video.currentTime)
+
+
+
                 if (video.duration == video.currentTime) {
                     video.pause()
                     this.videoStatus = 'Pause'
@@ -107,6 +121,20 @@ export default {
                 this.resetVideo()
             })
         },
+        setupQuestionTimestampListeners() {
+            const video = document.getElementById('quiz-video')
+            video.addEventListener('timeupdate', () => {
+                if(video.currentTime >= this.timestamps[this.questionCounter]) {
+                    this.togglePlayVideo()
+                    this.stopVideoAtTimestamp()
+                }
+            })
+        },
+        setupTimestampsArray() {
+            for(const activity of this.activities) {
+                this.timestamps.push(activity.timestamp)
+            }
+        },
         resetVideo() {
             const video = document.getElementById('quiz-video')
             const seeker = document.getElementById('draggable-seeker')
@@ -117,6 +145,18 @@ export default {
             progressBar.style.width = 0 + '%'
             videoCurrentTime.innerHTML = '00:00'
         },
+        stopVideoAtTimestamp() {
+            this.toggleDragAndDrop()
+        },
+        toggleDragAndDrop(questionResult) {
+            this.dragAndDropReady = !this.dragAndDropReady
+            console.log(this.dragAndDropReady)
+            if(this.dragAndDropReady === false) {
+                this.results.push(questionResult)
+                this.togglePlayVideo()
+                this.questionCounter++
+            }
+        }
 
 	},
     mounted() {
@@ -124,6 +164,8 @@ export default {
         this.setupProgressBarListeners()
         this.setupResetVideoListeners()
         this.resetVideo()
+        this.setupTimestampsArray()
+        this.setupQuestionTimestampListeners()
         setTimeout(() => {
             this.setVideoDuration()
         },100)
