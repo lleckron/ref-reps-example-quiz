@@ -106,7 +106,7 @@ export default {
     position: relative;
     align-items: center;
     --tw-text-opacity: 1;
-    color: rgb(45 212 191 / var(--tw-text-opacity));
+    color: rgb(75 85 99 / var(--tw-text-opacity));
     font-weight: 600;
     margin-right: 1.25rem;
 }
