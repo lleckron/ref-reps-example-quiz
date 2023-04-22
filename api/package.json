@@ -1,0 +1,53 @@
+{
+    "name": "right-call-api",
+    "version": "1.0.0",
+    "description": "API connecting Right Call Web to Database",
+    "main": "./dist/webApi/index.js",
+    "scripts": {
+      "start": "ts-node ./webApi/index.js",
+      "lint": "eslint --fix ./*/*/*.js",
+      "deploy": "firebase deploy --only functions",
+      "build": "npx tsc"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/BRADrocket72/right-call-web.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+      "url": "https://github.com/BRADrocket72/right-call-web/issues"
+    },
+    "homepage": "https://github.com/BRADrocket72/right-call-web#readme",
+    "dependencies": {
+      "body-parser": "^1.20.1",
+      "cors": "^2.8.5",
+      "dotenv": "^16.0.3",
+      "express": "^4.18.2",
+      "firebase-admin": "^11.5.0",
+      "firebase-functions": "^4.2.1",
+      "jsonwebtoken": "^8.5.1",
+      "mongodb": "^4.12.1",
+      "mongodb-memory-server": "^8.11.4",
+      "mongoose": "^6.7.0",
+      "multer": "^1.4.5-lts.1",
+      "multer-s3": "^3.0.1",
+      "nodemon": "^2.0.20",
+      "uuid": "^9.0.0"
+    },
+    "devDependencies": {
+      "-": "^0.0.1",
+      "@babel/preset-typescript": "^7.18.6",
+      "@types/node": "^18.11.18",
+      "@typescript-eslint/eslint-plugin": "^5.49.0",
+      "@typescript-eslint/parser": "^5.49.0",
+      "eslint": "^8.32.0",
+      "g": "^2.0.1",
+      "supertest": "^6.3.3",
+      "ts-node": "^10.9.1",
+      "typescript": "^4.9.4"
+    },
+    "engines": {
+      "node": "18"
+    }
+  }

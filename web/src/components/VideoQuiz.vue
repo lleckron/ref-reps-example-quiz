@@ -152,8 +152,6 @@ export default {
             this.dragAndDropReady = false
         },
         async hideDragAndDrop(questionResult) {
-            console.log('here')
-            console.log(questionResult)
             this.dragAndDropReady = false
             this.results.push(questionResult)
             console.log(this.results)
@@ -173,7 +171,8 @@ export default {
         this.resetVideo()
         this.setupTimestampsArray()
         this.setupQuestionTimestampListeners()
-
+        console.log(this.activities)
+        
         const video = document.getElementById('quiz-video')
         video.currentTime = 0
     }
