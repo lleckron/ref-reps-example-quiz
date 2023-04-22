@@ -18,7 +18,7 @@
                 <button type="button" class="reset-word-bank" @click="resetWordBank()">Reset</button>
             </div>
             <div class="submit-button-div">
-                <button type="button" class="submit" id="submit-button" @click="checkAnswers" disabled>Submit</button>
+                <button type="button" class="submit" id="submit-button" @click="checkAnswers()" disabled>Submit</button>
             </div>
         </div>
     </div>
@@ -42,7 +42,7 @@ export default {
     },
     methods: {
         close() {
-            //this.$emit('close', this.returnAnswers);
+            this.$emit('close', this.returnAnswer);
         },
         wordBankSetup(answer) {
             let wordBank = document.getElementById(answer)
@@ -90,7 +90,10 @@ export default {
                 newElement.draggable = true
                 newElement.classList.add('drop-div-text')
                 newElement.innerHTML = source.innerHTML
-                newElement.style.margin = 0
+                newElement.style.margin = 5 + 'px ' + 0 + ' ' + 0 + ' ' + 0
+                newElement.style.width = 100 + '%'
+                newElement.style.textAlign = 'center'
+
                 newElement.addEventListener('mouseenter', (event) => {
                     event.target.style.cursor = 'move'
                 })
@@ -183,18 +186,19 @@ export default {
         }
     },
     mounted() {
-        console.log(this.activity)
-
         for(const answer of this.activity.answers) {
+            
             this.wordBankAnswers.push(answer[0])
             this.originalWordBank.push(answer[0])
         }
         this.totalAnswers = this.activity.answers.length
 
-        for(let i = 1; i <= this.totalAnswers; i++) {
-            this.wordBankSetup(this.originalWordBank[i-1])
-            this.dropAreaSetup(i)
-        }
+        setTimeout(() => {
+            for(let i = 1; i <= this.totalAnswers; i++) {
+                this.wordBankSetup(this.originalWordBank[i-1])
+                this.dropAreaSetup(i)
+            }
+        }, 10)
     }
 }
 </script>
@@ -204,10 +208,13 @@ export default {
 .question {
     position: absolute;
     text-align: center;
-    min-width: 972px;
-    max-width: 972px;
+    min-width: 1000px;
+    max-width: 1000px;
+    min-height: 82px;
+    max-height: 82px;
     background: #928787;
-    margin: -70px auto;
+    margin: -94px 0 0 75px;
+    border-radius: 6px;
 }
 
 .question h2 {
@@ -217,7 +224,7 @@ export default {
 
 .question p {
     color: #000000;
-    margin: 0;
+    margin-top: -8px;
 }
 
 .drag-container {
@@ -233,35 +240,41 @@ export default {
 
 .drop-area {
     position: absolute;
-    min-width: 972px;
-    max-width: 972px;
-    min-height: 550px;
+    min-width: 1000px;
+    max-width: 1000px;
+    min-height: 565px;
     max-height: 550px;
-    margin-right: 10px;
+    margin-left: 74px;
+    margin-top: -10px;
 }
 
 .word-bank-container {
     min-width: 178px;
     max-width: 178px;
-    min-height: 380px;
-    max-height: 380px;
+    min-height: 450px;
+    max-height: 450px;
     overflow-y: auto;
 }
 
 .word-bank {
     position: absolute;
-    right: -10px;
+    right: -110px;
     min-width: 178px;
     max-width: 178px;
-    min-height: 550px;
-    max-height: 550px;
+    min-height: 614px;
+    max-height: 614px;
     background: #0e333c;
     border-radius: 10px;
+    margin-top: -8px;
 }
 
 .word-bank h2 {
+    display: flex;
     color: #ffffff;
-    margin: 10px 5px 5px 5px;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    margin: 10px 6px 5px 6px;
     border-bottom: 1px solid #ffffff;
 }
 
@@ -285,7 +298,7 @@ export default {
 .word-bank-option {
     display: flex;
     justify-content: center;
-    padding-top: 3px;
+    align-items: center;
     min-height: 40px;
     max-height: 80px;
 }
@@ -303,6 +316,11 @@ export default {
     border-radius: 10px;
     font-size: 20px;
     color: #000000;
+}
+
+.drop-div-text {
+    width: 100%;
+    height: 100%;
 }
 
 .drop-div-text:hover {
@@ -327,6 +345,7 @@ export default {
     font-size: 16px;
     font-weight: bold;
     background: #d8d8d8;
+    cursor: pointer;
 }
 
 .reset-word-bank:hover {
@@ -347,6 +366,7 @@ export default {
     font-size: 16px;
     font-weight: bold;
     background: #27e265;
+    cursor: pointer;
 }
 
 .submit:hover {

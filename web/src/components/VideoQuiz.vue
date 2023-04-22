@@ -1,6 +1,9 @@
 <template>
     <div class="video-container">
-        <video id="quiz-video" src="../assets/P15_Shooting_Foul_2.mp4"></video>
+        <video id="quiz-video" src="../assets/P15_Shooting_Foul_2.mp4" @loadedmetadata="setVideoDuration()"></video>
+        <div v-if="dragAndDropReady" class="show-drag-and-drop">
+            <DragAndDropQuizQuestion :activity="activities[questionCounter]" @close="hideDragAndDrop"/>
+        </div>
         <div class="controls" id="controls">
 
             <div class="play-button-div">
@@ -12,9 +15,9 @@
 
             <div class="video-time" id="video-time" draggable="false" @mouseover="showTooltip = true" @mouseleave="showTooltip = false">
                 <TransitionGroup name="toggle-tooltip">
-                    <div v-show="showTooltip === true" :key="showTooltip" class="show-tooltip">
+                    <div v-show="showTooltip === true && dragAndDropReady === false" :key="showTooltip" class="show-tooltip">
                         <div class="tooltip">
-                            <p>Click the time to reset the video.</p>
+                            <p>Click the time to reset the quiz.</p>
                         </div>
                         <div class="tail" :key="showTooltip"></div>
                     </div>
@@ -29,9 +32,6 @@
                 <div class="draggable-seeker" id="draggable-seeker"></div>
             </div>
 
-        </div>
-        <div>
-            <DragAndDropQuizQuestion v-if="dragAndDropReady" :activity="activities[questionCounter]"/>
         </div>
     </div>
 </template>
@@ -54,20 +54,20 @@ export default {
             dragAndDropReady: false,
             questionCounter: 0,
             timestamps: [],
-            results: []
+            results: [],
 		}
 	},
     props: {
         activities: {}
     },
 	methods: {
-		togglePlayVideo() {
+		async togglePlayVideo() {
             const video = document.getElementById('quiz-video')
             if (video.paused) {
-                video.play()
+                await video.play()
                 this.videoStatus = 'Play'
             } else {
-                video.pause()
+                await video.pause()
                 this.videoStatus = 'Pause'
             }
         },
@@ -91,14 +91,12 @@ export default {
         },
         setupVideoTimeListeners() {
             const video = document.getElementById('quiz-video')
-            video.addEventListener('timeupdate', () => {
+            video.addEventListener('timeupdate', async () => {
                 const videoCurrentTime = document.getElementById("video-current-time")
                 videoCurrentTime.innerHTML = this.formatVideoTime(video.currentTime)
 
-
-
                 if (video.duration == video.currentTime) {
-                    video.pause()
+                    await video.pause()
                     this.videoStatus = 'Pause'
                 }
             })
@@ -123,10 +121,15 @@ export default {
         },
         setupQuestionTimestampListeners() {
             const video = document.getElementById('quiz-video')
-            video.addEventListener('timeupdate', () => {
+            video.addEventListener('timeupdate', async () => {
                 if(video.currentTime >= this.timestamps[this.questionCounter]) {
-                    this.togglePlayVideo()
-                    this.stopVideoAtTimestamp()
+                    await video.pause()
+                    this.videoStatus = 'Pause'
+                    this.dragAndDropReady = true
+
+                    const playButton = document.getElementById('play-pause-button')
+                    playButton.disabled = true
+                    playButton.classList.add('disabled-play-button')
                 }
             })
         },
@@ -144,18 +147,22 @@ export default {
             seeker.style.left = 0 + '%'
             progressBar.style.width = 0 + '%'
             videoCurrentTime.innerHTML = '00:00'
+            this.questionCounter = 0
+            this.results = []
+            this.dragAndDropReady = false
         },
-        stopVideoAtTimestamp() {
-            this.toggleDragAndDrop()
-        },
-        toggleDragAndDrop(questionResult) {
-            this.dragAndDropReady = !this.dragAndDropReady
-            console.log(this.dragAndDropReady)
-            if(this.dragAndDropReady === false) {
-                this.results.push(questionResult)
-                this.togglePlayVideo()
-                this.questionCounter++
-            }
+        async hideDragAndDrop(questionResult) {
+            console.log('here')
+            console.log(questionResult)
+            this.dragAndDropReady = false
+            this.results.push(questionResult)
+            console.log(this.results)
+            await this.togglePlayVideo()
+            this.questionCounter++
+
+            const playButton = document.getElementById('play-pause-button')
+            playButton.disabled = false
+            playButton.classList.remove('disabled-play-button')
         }
 
 	},
@@ -166,9 +173,6 @@ export default {
         this.resetVideo()
         this.setupTimestampsArray()
         this.setupQuestionTimestampListeners()
-        setTimeout(() => {
-            this.setVideoDuration()
-        },100)
 
         const video = document.getElementById('quiz-video')
         video.currentTime = 0
@@ -183,7 +187,7 @@ export default {
     align-items: center;
     justify-content: center;
     width: 100%;
-    margin-top: 50px;
+    margin-top: 75px;
 }
 
 #quiz-video {
@@ -253,6 +257,11 @@ export default {
     background: #415551;
 }
 
+.disabled-play-button {
+    background: #415551;
+    cursor: not-allowed;
+}
+
 .progress-div {
     position: relative;
     margin: 15px 10px 0 5px;
@@ -288,17 +297,19 @@ export default {
     max-width: 100px;
     min-height: 80px;
     max-height: 80px;
-    background: #ffffff;
+    background: #5a5a5a;
+    color: #ffffff;
     margin-top: -70px;
     margin-left: -11px;
     border-radius: 6px;
-    opacity: .9;
+    opacity: .85;
 }
 
 .tooltip {
     width: 100%;
     font-size: 15px;
     text-align: center;
+    text-shadow: 1px 0 black;
 }
 
 .tail {
@@ -307,14 +318,24 @@ export default {
     left: 40px;
     width: 0;
     height: 0;
-    border-color:#f9f9f9 transparent transparent transparent;
+    border-color:#5a5a5a transparent transparent transparent;
     border-width: 10px;
     border-style: solid;
 }
 
+.show-drag-and-drop {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    min-width: 1150px;
+    max-width: 1150px;
+    min-height: 550px;
+    max-height: 550px;
+}
+
 .toggle-tooltip-leave-from,
 .toggle-tooltip-enter-to  {
-    opacity: .9;
+    opacity: .85;
 }
 
 .toggle-tooltip-leave-to,

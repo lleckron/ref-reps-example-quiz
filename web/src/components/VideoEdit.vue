@@ -1,6 +1,6 @@
 <template>
     <div class="edit-video-container">
-        <video id="edit-video" src="../assets/P15_Shooting_Foul_2.mp4"></video>
+        <video id="edit-video" src="../assets/P15_Shooting_Foul_2.mp4" @loadedmetadata="setVideoDuration()"></video>
         <div class="edit-controls" id="edit-controls">
 
             <div class="edit-play-button-div">
@@ -166,13 +166,10 @@ export default {
         }, 
         setupExistingActivities() {
             this.activities = this.existingActivities
-            console.log(this.activities)
             for(const activity of this.activities) {
                 let timestamp = activity.timestamp
                 this.timestamps.push(timestamp)
                 this.formattedTimestamps.push(this.formatVideoTime(timestamp))
-                console.log(this.timestamps)
-                console.log(this.formattedTimestamps)
             }
         },
         seekerMouseDownListener() {
@@ -339,7 +336,9 @@ export default {
                 const video = document.getElementById('edit-video')
                 video.pause()
                 this.moveVideoToTimestampFrame()
-                this.dragAndDropSetup()
+                setTimeout(() => {
+                    this.dragAndDropSetup()
+                }, 50)
             } else {
                 this.imageReady = false
             }
@@ -383,9 +382,6 @@ export default {
             this.setupSeekerEventListeners()
             this.setupProgressDivClickListener()
             this.resetVideo()
-            setTimeout(() => {
-                this.setVideoDuration()
-            }, 100)
         }, 10)
 
         const video = document.getElementById('edit-video')
