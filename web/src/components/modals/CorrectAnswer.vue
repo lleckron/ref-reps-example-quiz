@@ -19,7 +19,7 @@ export default ({
     },
     mounted() {
         confetti({
-            ticks: 6
+            ticks: 60
         })
     }
 })
