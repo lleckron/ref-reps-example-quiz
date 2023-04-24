@@ -5,9 +5,10 @@
 </template>
 
 <script>
-import NavbarHeader from './components/NavbarHeader.vue'
-import VideoQuiz from './components/VideoQuiz.vue'
-import VideoEdit from './components/VideoEdit.vue'
+import NavbarHeader from '@/components/NavbarHeader.vue'
+import VideoQuiz from '@/components/VideoQuiz.vue'
+import VideoEdit from '@/components/VideoEdit.vue'
+import { useExampleQuizStore } from '@/stores/ExampleQuizStores.js'
 
 export default {
 	name: 'App',
@@ -26,10 +27,23 @@ export default {
 		toggleVideoMode(mode) {
 			this.videoMode = mode
 		},
-		updateQuizQuestions(editData) {
-			this.activities = editData
+		updateQuizQuestions() {
+			this.getExampleQuizContent()
 			this.toggleVideoMode('Quiz')
-		}
+		},
+		async getExampleQuizContent() {
+			const store = useExampleQuizStore()
+			await store.fetchExampleQuizzes()
+			this.activities = store.exampleQuizList
+			this.orderActivitiesByTimestamp()
+		},
+		orderActivitiesByTimestamp() {
+            this.activities.sort((a,b) => a.timestamp - b.timestamp)
+			console.log(this.activities)
+        },
+	},
+	async created() {
+		await this.getExampleQuizContent()
 	}
 }
 </script>

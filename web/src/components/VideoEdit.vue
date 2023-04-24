@@ -40,7 +40,7 @@
                 </li>
             </ul>
 
-            <button id="save-timestamps-button" @click="updateTimestampList()">Save</button>
+            <button id="save-timestamps-button" @click="updateAPI()">Save</button>
         </div>
         <DragAndDrop v-if="modalVisible === true && imageReady === true" :activity="activities[currentActivityIndex]" :image="dragAndDropImage" @close="toggleDragAndDropModal" @save="dragAndDropSave"/>
     </div>
@@ -49,6 +49,7 @@
 <script>
 import DragAndDrop from './modals/DragAndDrop.vue'
 import ActivityDto from '../models/ActivityDto'
+import { useExampleQuizStore } from '../stores/ExampleQuizStores.js'
 
 export default {
 	name: 'VideoEdit',
@@ -67,6 +68,8 @@ export default {
             timestamps: [],
             formattedTimestamps: [],
             activities: [],
+            deletedActivities: [],
+            updatedActivities: [],
             newTimestamp: Number,
             modalVisible: false,
             currentActivityTimestamp: Number,
@@ -313,6 +316,14 @@ export default {
         deleteTimestamp(deletedTimestampIndex) {
             this.timestamps.splice(deletedTimestampIndex,1)
             this.formattedTimestamps.splice(deletedTimestampIndex,1)
+            if((this.activities[deletedTimestampIndex]._id) && (this.deletedActivities.indexOf(this.activities[deletedTimestampIndex]._id != -1))){
+                this.deletedActivities.push(this.activities[deletedTimestampIndex]._id)
+            }
+            if((this.activities[deletedTimestampIndex]._id) && (this.updatedActivities.indexOf(this.activities[deletedTimestampIndex]._id != -1))){
+                const removeFromUpdatedList = this.updatedActivities.indexOf(this.activities[deletedTimestampIndex]._id)
+                this.updatedActivities.splice(removeFromUpdatedList,1)
+            }
+
             this.activities.splice(deletedTimestampIndex, 1)
             this.toggleSaveButton()
         },
@@ -360,16 +371,44 @@ export default {
             for(const answer of modalData[1]) {
                 answers.push(answer)
             }
-            if(this.activities[this.currentActivityIndex].timestamp) {
+            if(this.activities[this.currentActivityIndex]._id) {
                 this.activities[this.currentActivityIndex].questionText = modalData[0]
                 this.activities[this.currentActivityIndex].answers = modalData[1]
+                if(this.updatedActivities.indexOf(this.activities[this.currentActivityIndex]._id) == -1) {
+                    this.updatedActivities.push(this.activities[this.currentActivityIndex]._id   )
+                }
             } else {
                 this.activities[this.currentActivityIndex] = new ActivityDto(this.currentActivityTimestamp, modalData[0], modalData[1])
             }
             this.toggleSaveButton()
         },
-        updateTimestampList() {
-            this.$emit('save',this.activities) 
+        async updateAPI() {
+            await this.postExampleQuizAPI()
+            await this.updateExampleQuizAPI()
+            await this.deleteExampleQuizAPI()
+            this.$emit('save') 
+        },
+        async postExampleQuizAPI() {
+            const store = useExampleQuizStore()
+            for(const activity of this.activities) {
+                if(!activity._id) {
+                    await store.postExampleQuiz(activity.timestamp, activity.questionText, activity.answers)
+                }
+            }
+        },
+        async updateExampleQuizAPI() {
+            const store = useExampleQuizStore()
+            const activitiesList = this.activities
+            for(const id of this.updatedActivities) {
+                var index = activitiesList.findIndex(activity => activity._id == id)
+                await store.updateExampleQuiz(activitiesList[index]._id,activitiesList[index].timestamp,activitiesList[index].questionText,activitiesList[index].answers)
+            }
+        },
+        async deleteExampleQuizAPI() {
+            const store = useExampleQuizStore()
+            for(const id of this.deletedActivities) {
+                await store.deleteExampleQuiz(id)
+            }
         }
 	},
     created() {
@@ -383,7 +422,6 @@ export default {
             this.setupProgressDivClickListener()
             this.resetVideo()
         }, 10)
-
         const video = document.getElementById('edit-video')
 		video.currentTime = 0
     }
