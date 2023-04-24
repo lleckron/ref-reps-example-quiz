@@ -2,7 +2,6 @@
     <div class="drag-container" id="drag-container">
         <div class="question">
             <h2>{{activity.questionText}}</h2>
-            <p>Drag and drop the answers into their correct spots.</p>
         </div>
         <div class="drop-area" id="drop-area">
             <div v-for="(answer,index) in activity.answers" :key="answer" class="drop-div" :id="'drop-div-' + (index + 1)" :style="{left: answer[2] + 'px', top: answer[3] + 'px'}" ></div>
@@ -210,21 +209,18 @@ export default {
     text-align: center;
     min-width: 1000px;
     max-width: 1000px;
-    min-height: 82px;
-    max-height: 82px;
+    min-height: 50px;
+    max-height: 50px;
     background: #928787;
-    margin: -94px 0 0 75px;
+    margin: -60px 0 0 75px;
     border-radius: 6px;
 }
 
 .question h2 {
     color: #ffffff;
     text-shadow: 1px 1px 3px #000000;
-}
-
-.question p {
-    color: #000000;
-    margin-top: -8px;
+    margin-top: 4px;
+    font-size: 30px;
 }
 
 .drag-container {

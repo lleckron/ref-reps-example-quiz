@@ -72,4 +72,13 @@ export default ({
     background: #c9c9c9;
     box-shadow: 0 0 12px #000000;
 }
+
+@media only screen and (max-height: 1200px) {
+    .correct-answer {
+        height: 120%;
+    }
+    .feedback-container {
+        margin-top: 75px;
+    }
+}
 </style>
