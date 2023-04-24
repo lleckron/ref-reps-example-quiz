@@ -178,7 +178,6 @@ export default {
             playButton.classList.remove('disabled-play-button')
         },
         async toggleFeedback(type) {
-            console.log(type)
             if(type === 'Correct') {
                 this.showCorrectFeedback = false
             } else {

@@ -19,7 +19,7 @@ export default ({
     },
     mounted() {
         confetti({
-            ticks: 65
+            ticks: 6
         })
     }
 })
@@ -49,7 +49,7 @@ export default ({
     width: 250px;
     background: #0e333c;
     border-radius: 12px;
-    box-shadow: 0 0 6px #e9e9e9;
+    box-shadow: 0 0 6px #c9c9c9;
 }
 
 .feedback {
