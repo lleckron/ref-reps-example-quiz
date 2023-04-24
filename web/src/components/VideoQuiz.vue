@@ -34,18 +34,21 @@
 
         </div>
         <CorrectAnswer v-if="showCorrectFeedback === true" @close="toggleFeedback" />
+        <IncorrectAnswer v-if="showIncorrectFeedback === true" @close="toggleFeedback" />
     </div>
 </template>
 
 <script>
 import DragAndDropQuizQuestion from './DragAndDropQuizQuestion.vue'
 import CorrectAnswer from './modals/CorrectAnswer.vue'
+import IncorrectAnswer from './modals/IncorrectAnswer.vue'
 
 export default {
 	name: 'VideoQuiz',
 	components: {
         DragAndDropQuizQuestion,
-        CorrectAnswer
+        CorrectAnswer,
+        IncorrectAnswer
 	},
 	data() {
 		return {
@@ -162,7 +165,11 @@ export default {
         async hideDragAndDrop(questionResult) {
             this.dragAndDropReady = false
             this.results.push(questionResult)
-            this.showCorrectFeedback = true
+            if(questionResult === 'Correct') {
+                this.showCorrectFeedback = true
+            } else {
+                this.showIncorrectFeedback = true
+            }
             this.setupResetVideoListeners()
             this.questionCounter++
 
