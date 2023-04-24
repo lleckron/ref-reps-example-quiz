@@ -73,7 +73,16 @@ export default ({
     box-shadow: 0 0 12px #000000;
 }
 
-@media only screen and (max-height: 1200px) {
+@media only screen and (max-height: 599px) {
+    .correct-answer {
+        height: 150%;
+    }
+    .feedback-container {
+        margin-top: 75px;
+    }
+}
+
+@media only screen and (min-height: 600px) and (max-height: 800px) {
     .correct-answer {
         height: 120%;
     }
