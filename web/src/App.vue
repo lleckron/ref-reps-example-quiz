@@ -1,7 +1,7 @@
 <template>
 	<NavbarHeader :mode="videoMode" @toggle="toggleVideoMode"/>
-	<VideoQuiz v-if="videoMode === 'Quiz'" :activities="activities"/>
-	<VideoEdit v-else-if="videoMode === 'Edit'" :existingActivities="activities" @save="updateQuizQuestions"/>
+	<VideoQuiz v-if="contentReady === true && videoMode === 'Quiz'" :activities="activities"/>
+	<VideoEdit v-else-if="contentReady === true && videoMode === 'Edit'" :existingActivities="activities" @save="updateQuizQuestions"/>
 </template>
 
 <script>
@@ -21,11 +21,21 @@ export default {
 		return {
 			videoMode: 'Quiz',
 			activities: [],
+			contentReady: false
 		}
 	},
 	methods: {
-		toggleVideoMode(mode) {
-			this.videoMode = mode
+		async toggleVideoMode(mode) {
+			if(this.videoMode === 'Quiz') {
+				const video = document.getElementById('quiz-video')
+				await video.pause()
+			} else if(this.videoMode === 'Edit') {
+				const video = document.getElementById('edit-video')
+				await video.pause()
+			}
+			setTimeout(() => {
+				this.videoMode = mode
+			},10)
 		},
 		updateQuizQuestions() {
 			this.getExampleQuizContent()
@@ -36,10 +46,10 @@ export default {
 			await store.fetchExampleQuizzes()
 			this.activities = store.exampleQuizList
 			this.orderActivitiesByTimestamp()
+			this.contentReady = true
 		},
 		orderActivitiesByTimestamp() {
             this.activities.sort((a,b) => a.timestamp - b.timestamp)
-			console.log(this.activities)
         },
 	},
 	async created() {

@@ -15,7 +15,7 @@
 
             <div class="video-time" id="video-time" draggable="false" @mouseover="showTooltip = true" @mouseleave="showTooltip = false">
                 <TransitionGroup name="toggle-tooltip">
-                    <div v-show="showTooltip === true && dragAndDropReady === false" :key="showTooltip" class="show-tooltip">
+                    <div v-show="showTooltip === true && dragAndDropReady === false" :key="showTooltip" class="show-tooltip" id="show-tooltip">
                         <div class="tooltip">
                             <p>Click the time to reset the quiz.</p>
                         </div>
@@ -33,16 +33,19 @@
             </div>
 
         </div>
+        <CorrectAnswer v-if="showCorrectFeedback === true" @close="toggleFeedback" />
     </div>
 </template>
 
 <script>
 import DragAndDropQuizQuestion from './DragAndDropQuizQuestion.vue'
+import CorrectAnswer from './modals/CorrectAnswer.vue'
 
 export default {
 	name: 'VideoQuiz',
 	components: {
-        DragAndDropQuizQuestion
+        DragAndDropQuizQuestion,
+        CorrectAnswer
 	},
 	data() {
 		return {
@@ -55,6 +58,8 @@ export default {
             questionCounter: 0,
             timestamps: [],
             results: [],
+            showCorrectFeedback: false,
+            showIncorrectFeedback: false
 		}
 	},
     props: {
@@ -114,6 +119,7 @@ export default {
         },
         setupResetVideoListeners() {
             const videoTimer = document.getElementById('video-time')
+
             videoTimer.addEventListener('mousedown', (event) => {
                 event.preventDefault()
                 this.resetVideo()
@@ -139,39 +145,51 @@ export default {
             }
         },
         resetVideo() {
-            const video = document.getElementById('quiz-video')
-            const seeker = document.getElementById('draggable-seeker')
-            const progressBar = document.getElementById('progress-bar')
-            const videoCurrentTime = document.getElementById('video-current-time')
-            video.currentTime = 0
-            seeker.style.left = 0 + '%'
-            progressBar.style.width = 0 + '%'
-            videoCurrentTime.innerHTML = '00:00'
-            this.questionCounter = 0
-            this.results = []
-            this.dragAndDropReady = false
+            if(this.dragAndDropReady === false) {
+                const video = document.getElementById('quiz-video')
+                const seeker = document.getElementById('draggable-seeker')
+                const progressBar = document.getElementById('progress-bar')
+                const videoCurrentTime = document.getElementById('video-current-time')
+                video.currentTime = 0
+                seeker.style.left = 0 + '%'
+                progressBar.style.width = 0 + '%'
+                videoCurrentTime.innerHTML = '00:00'
+                this.questionCounter = 0
+                this.results = []
+                this.dragAndDropReady = false
+            }
         },
         async hideDragAndDrop(questionResult) {
             this.dragAndDropReady = false
             this.results.push(questionResult)
-            console.log(this.results)
-            await this.togglePlayVideo()
+            this.showCorrectFeedback = true
+            this.setupResetVideoListeners()
             this.questionCounter++
 
             const playButton = document.getElementById('play-pause-button')
             playButton.disabled = false
             playButton.classList.remove('disabled-play-button')
+        },
+        async toggleFeedback(type) {
+            console.log(type)
+            if(type === 'Correct') {
+                this.showCorrectFeedback = false
+            } else {
+                this.showIncorrectFeedback = false
+            }
+            await this.togglePlayVideo()
         }
 
 	},
     mounted() {
-        this.setupVideoTimeListeners()
-        this.setupProgressBarListeners()
-        this.setupResetVideoListeners()
-        this.resetVideo()
-        this.setupTimestampsArray()
-        this.setupQuestionTimestampListeners()
-        console.log(this.activities)
+        setTimeout(() => {
+            this.setupVideoTimeListeners()
+            this.setupProgressBarListeners()
+            this.setupResetVideoListeners()
+            this.resetVideo()
+            this.setupTimestampsArray()
+            this.setupQuestionTimestampListeners()
+        }, 40)
         
         const video = document.getElementById('quiz-video')
         video.currentTime = 0
