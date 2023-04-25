@@ -297,6 +297,7 @@ export default {
     align-items: center;
     min-height: 40px;
     max-height: 80px;
+    text-align: center;
 }
 
 .drop-div {

@@ -349,7 +349,7 @@ export default {
                 this.moveVideoToTimestampFrame()
                 setTimeout(() => {
                     this.dragAndDropSetup()
-                }, 50)
+                }, 150)
             } else {
                 this.imageReady = false
             }
