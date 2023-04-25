@@ -84,7 +84,7 @@ export default ({
 
 @media only screen and (min-height: 600px) and (max-height: 800px) {
     .correct-answer {
-        height: 120%;
+        height: 125%;
     }
     .feedback-container {
         margin-top: 75px;
