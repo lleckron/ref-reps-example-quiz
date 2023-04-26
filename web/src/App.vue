@@ -1,6 +1,6 @@
 <template>
 	<NavbarHeader :mode="videoMode" @toggle="toggleVideoMode"/>
-	<VideoQuiz v-if="contentReady === true && videoMode === 'Quiz'" :activities="activities"/>
+	<VideoQuiz v-if="contentReady === true && videoMode === 'Quiz'" :activities="activities" @togglemode="toggleVideoMode('Edit')"/>
 	<VideoEdit v-else-if="contentReady === true && videoMode === 'Edit'" :existingActivities="activities" @save="updateQuizQuestions"/>
 </template>
 

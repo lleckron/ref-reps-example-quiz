@@ -32,6 +32,12 @@
                 <div class="draggable-seeker" id="draggable-seeker"></div>
             </div>
 
+            <div class="edit-quiz-div" draggable="false">
+                <button id="edit-quiz-button" @click="toggleVideoMode()">
+                    Edit This Quiz
+                </button>
+            </div>
+
         </div>
         <CorrectAnswer v-if="showCorrectFeedback === true" @close="toggleFeedback" />
         <IncorrectAnswer v-if="showIncorrectFeedback === true" @close="toggleFeedback" />
@@ -69,6 +75,9 @@ export default {
         activities: {}
     },
 	methods: {
+        toggleVideoMode() {
+            this.$emit('togglemode') 
+        },
 		async togglePlayVideo() {
             const video = document.getElementById('quiz-video')
             if (video.paused) {
@@ -344,6 +353,34 @@ export default {
     border-color:#5a5a5a transparent transparent transparent;
     border-width: 10px;
     border-style: solid;
+}
+
+.edit-quiz-div {
+    width: 117px;
+}
+
+#edit-quiz-button {
+    float: right;
+    text-align: center;
+    border: none;
+    font-size: 16px;
+    text-shadow: 1px 1px #0e333c;
+    color: white;
+    background: #4AAE9B;
+    width: 117px;
+    height: 30px;
+    border-radius: 10px;
+    margin: 9px -15px 9px 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: pointer;
+}
+
+#edit-quiz-button:hover {
+    background: #349b88;
+    box-shadow: 0 2px 2px #000000;
 }
 
 .show-drag-and-drop {
