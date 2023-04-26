@@ -25,9 +25,8 @@
                         </div>
                     </div>
 
-                    <button class="edit-button" @click="toggleModeClick">
-                        <p v-show="mode === 'Quiz'" class="edit-p">Edit</p>
-                        <p v-show="mode === 'Edit'" class="edit-p">Quiz</p>
+                    <button class="login-button" @click="toggleModeClick">
+                        <p class="login-p">Log In</p>
                     </button>
                 </div>
 
@@ -39,19 +38,7 @@
 <script>
 
 export default {
-	name: 'NavbarHeader',
-    props: {
-        mode: String
-    },
-    methods: {
-        toggleModeClick() {
-            if(this.mode === 'Quiz') {
-                this.$emit('toggle', 'Edit')
-            } else if(this.mode === 'Edit') {
-                this.$emit('toggle', 'Quiz')
-            }
-        }
-    }
+	name: 'NavbarHeader'
 }
 </script>
 
@@ -161,7 +148,7 @@ export default {
     color: rgb(45 212 191 / var(--tw-text-opacity));
 }
 
-.edit-button {
+.login-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -174,13 +161,13 @@ export default {
     cursor: pointer;
 }
 
-.edit-button:hover {
+.login-button:hover {
     background: rgb(0 0 0);
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.edit-p {
+.login-p {
     font-size: 1rem;
     font-weight: bold;
 }
