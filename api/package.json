@@ -4,7 +4,7 @@
     "description": "API connecting Right Call Web to Database",
     "main": "./dist/webApi/index.js",
     "scripts": {
-      "start": "ts-node ./webApi/index.js",
+      "start": "ts-node ./webApi/index.ts",
       "lint": "eslint --fix ./*/*/*.js",
       "deploy": "firebase deploy --only functions",
       "build": "npx tsc"
